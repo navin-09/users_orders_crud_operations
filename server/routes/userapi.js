@@ -71,12 +71,10 @@ router.get("/getallUserOrders", async (req, res) => {
 
     for (let index = 0; index < usersResult.rows.length; index++) {
       const userId = usersResult.rows[index].id;
-
       const ordersResult = await pool.query(
         "SELECT * FROM orders WHERE userid = $1",
         [userId]
       );
-
       const userWithOrders = {
         username: usersResult.rows[index].username,
         orders: ordersResult.rows,
