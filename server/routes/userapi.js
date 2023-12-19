@@ -47,14 +47,43 @@ router.delete("/deleteUser/:id", async (req, res) => {
     res.status(500).send("Internal server error");
   }
 });
-
-router.get("/getUsers", (req, res) => {
-  pool.query("select * from users", (err, users) => {
-    if (err) {
-      res.send(err);
+// Retrieve a single user by their ID along with their orders.
+router.get("/getUserOrder/:id", async (req, res) => {
+  let { id } = req.params;
+  id = parseInt(id);
+  try {
+    const result = await pool.query("select * from orders where userid = $1", [
+      id,
+    ]);
+    res.status(201).json(result.rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error");
+  }
+});
+// Retrieve a list of all users with their associated orders.
+router.get("/getUserOrder/:id", async (req, res) => {
+  let { id } = req.params;
+  id = parseInt(id);
+  try {
+    const res1 = {};
+    const result = await pool.query("select id,username from users");
+    for (let index = 0; index < result.length; index++) {
+      const id = array[index].id;
+      const result = await pool.query(
+        "select * from orders where userid = $1",
+        [id]
+      );
+      console.log({ result });
+      res1["username"] = username;
+      res1["orders"] = result.rows;
     }
-    res.send(users.rows);
-  });
+    console.log(res1);
+    res.status(201).json(result.rows);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error");
+  }
 });
 
 module.exports = router;

@@ -78,4 +78,15 @@ router.delete("/deleteOrder/:id", async (req, res) => {
   }
 });
 
+//Total Revenue
+router.get("/TotalRevenue", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT sum(totalamount) FROM orders");
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Internal server error");
+  }
+});
+
 module.exports = router;
