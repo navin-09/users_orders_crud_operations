@@ -62,26 +62,32 @@ router.get("/getUserOrder/:id", async (req, res) => {
   }
 });
 // Retrieve a list of all users with their associated orders.
-router.get("/getUserOrder/:id", async (req, res) => {
-  let { id } = req.params;
-  id = parseInt(id);
+// Retrieve a list of all users with their associated orders.
+router.get("/getallUserOrders", async (req, res) => {
   try {
-    const res1 = {};
-    const result = await pool.query("select id,username from users");
-    for (let index = 0; index < result.length; index++) {
-      const id = array[index].id;
-      const result = await pool.query(
-        "select * from orders where userid = $1",
-        [id]
+    const usersWithOrders = [];
+
+    const usersResult = await pool.query("SELECT id, username FROM users");
+
+    for (let index = 0; index < usersResult.rows.length; index++) {
+      const userId = usersResult.rows[index].id;
+
+      const ordersResult = await pool.query(
+        "SELECT * FROM orders WHERE userid = $1",
+        [userId]
       );
-      console.log({ result });
-      res1["username"] = username;
-      res1["orders"] = result.rows;
+
+      const userWithOrders = {
+        username: usersResult.rows[index].username,
+        orders: ordersResult.rows,
+      };
+
+      usersWithOrders.push(userWithOrders);
     }
-    console.log(res1);
-    res.status(201).json(result.rows);
+
+    res.status(200).json(usersWithOrders);
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).send("Internal server error");
   }
 });
