@@ -62,7 +62,6 @@ router.get("/getUserOrder/:id", async (req, res) => {
   }
 });
 // Retrieve a list of all users with their associated orders.
-// Retrieve a list of all users with their associated orders.
 router.get("/getallUserOrders", async (req, res) => {
   try {
     const usersWithOrders = [];
